@@ -1,0 +1,5 @@
+C:\Users\Diana\Networks_projects\SelfCounter>java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/SelfCounter
+
+cd C:\Users\Diana\Networks_projects\SelfCounter
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/udp/SelfCounter
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/broad/BroadSelfCounter
