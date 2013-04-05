@@ -7,3 +7,7 @@ java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/broad/BroadSel
 cd H:\SelfCounter
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/rate/RateServer
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/rate/RateClient H:/SelfCounter/5.txt 10.4.0.2 5554
+
+
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/transmission/DataTransmissionServer
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/transmission/DataTransmissionClient H:/SelfCounter/5.txt 10.4.0.2 5554
