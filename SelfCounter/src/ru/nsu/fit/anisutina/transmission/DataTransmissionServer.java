@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
  * To change this template use File | Settings | File Templates.
  */
 public class DataTransmissionServer {
-    private static final int PORT = 5538;
+    private static final int PORT = 5539;
     private static ServerSocket serverSocket = null;
     private static Socket socket = null;
 

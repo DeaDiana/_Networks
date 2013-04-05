@@ -17,17 +17,18 @@ import java.net.UnknownHostException;
  */
 public class DataTransmissionClient {
     private static String filename_toread = "C:\\Users\\Diana\\Networks_projects\\SelfCounter\\5.txt";
-    private static String filename_tocreate = "C:\\Users\\Diana\\Networks_projects\\SelfCounter\\6.txt";
+    private static String filename_tocreate = "5.txt";
     private static InetAddress IP = null;
-    private static Integer PORT = 5538;
+    private static Integer PORT = 5539;
     private static Socket socket = null;
     private static FileInputStream inputStream = null;
     private static OutputStream outputStream = null;
-    private static final int LENGTH = 100;
+    private static final int LENGTH = 3 * 1024;
 
     public static void main(String args[]){
         if(args.length > 0){
             filename_toread = args[0];
+            filename_tocreate = args[3];
             PORT = Integer.parseInt(args[2]);
             try {
                 IP = InetAddress.getByName(args[1]);
