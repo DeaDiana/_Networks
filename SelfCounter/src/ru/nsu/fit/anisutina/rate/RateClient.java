@@ -18,13 +18,13 @@ import java.net.UnknownHostException;
  * To change this template use File | Settings | File Templates.
  */
 public class RateClient {
-    private static String filename = "C:\\Users\\Diana\\Networks_projects\\SelfCounter\\2.txt";
+    private static String filename = "5.txt";
     private static InetAddress IP = null;
-    private static Integer PORT = 5538;
+    private static Integer PORT = 5554;
     private static Socket socket = null;
     private static FileInputStream inputStream = null;
     private static OutputStream outputStream = null;
-    private static final int LENGTH = 100;
+    private static final int LENGTH = 3 * 1024;
 
     public static void main(String args[]){
 
@@ -33,14 +33,15 @@ public class RateClient {
             PORT = Integer.parseInt(args[2]);
             try {
                 IP = InetAddress.getByName(args[1]);
+                //IP = InetAddress.getByName(new String("10.4.0.2"));
             } catch (UnknownHostException e) {
                 System.err.println("did not convert from string to InetAddress [main]:RateClient");
             }
-        }
+        } else {    }
 
         try {
             inputStream = new FileInputStream(filename);
-            socket = new Socket("wDiana", PORT);//IP, PORT);////(
+            socket = new Socket("wDiana", PORT);//IP, PORT);
             outputStream = socket.getOutputStream();
             byte[] message = new byte[LENGTH];
             while (LENGTH == inputStream.read(message))

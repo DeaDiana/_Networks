@@ -16,31 +16,41 @@ import java.nio.CharBuffer;
  * To change this template use File | Settings | File Templates.
  */
 public class RateServer {
-    private static final int PORT = 5538;
+    private static final int PORT = 5554;
     private static ServerSocket serverSocket = null;
-    private static InputStreamReader inputStream = null;
+    private static InputStream inputStream = null;
     private static Socket socket = null;
-    private static final int LENGTH = 100;
-    private static final int NUMMILISEC = 1000;
+    private static final int LENGTH = 3 * 1024;
+    private static int readBytes[] = null;
+    private static long spendTime[] = null;
+
 
     public static void main(String args[]){
         try {
             serverSocket = new ServerSocket(PORT);
             socket = serverSocket.accept();
-            inputStream = new InputStreamReader(socket.getInputStream());
-            char[] message_buf = new char[LENGTH];
+            inputStream = socket.getInputStream();
+            byte[] message_buf = new byte[LENGTH];
+            readBytes = new int[10];
+            spendTime = new long[10];
             int iter = 1;
             long timer = System.currentTimeMillis();
             int num = inputStream.read(message_buf);
+            spendTime[0] = System.currentTimeMillis() - timer + 1;
+            readBytes[0] = num;
             while (LENGTH == num)
             {
-                num = inputStream.read(message_buf);
+                timer = System.currentTimeMillis();
+                readBytes[iter % 10] = inputStream.read(message_buf);
+                spendTime[iter % 10] = System.currentTimeMillis() - timer + 1;
+                num = readBytes[iter % 10];
                 iter++;
             }
-            timer = System.currentTimeMillis() - timer;
-            if(0 < timer) {
-            System.out.println((((iter * LENGTH + num) * NUMMILISEC / timer) / 1024) / 1024 + " Mb/sec");
-            } else {    System.out.println("Too fast");    }
+            for(int i = 1; i < (iter % 10); i++){
+                readBytes[0] += readBytes[i];
+                spendTime[0] +=spendTime[i];
+            }
+            System.out.println((readBytes[0] / spendTime[0]) + " b/sec");
         } catch (IOException e) {
             System.err.println("server-socket or  client-socket was not created [main]:RateServer");
         }

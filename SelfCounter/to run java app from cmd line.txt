@@ -3,3 +3,7 @@ C:\Users\Diana\Networks_projects\SelfCounter>java -classpath ./out/production/Se
 cd C:\Users\Diana\Networks_projects\SelfCounter
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/udp/SelfCounter
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/broad/BroadSelfCounter
+
+cd H:\SelfCounter
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/rate/RateServer
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/rate/RateClient H:/SelfCounter/5.txt 10.4.0.2 5554
