@@ -56,19 +56,21 @@ public class RateServer {
         }
 
         finally {
+            if(inputStream != null) {
                 try {
-                    if(inputStream != null)     {   inputStream.close();    }
+                    inputStream.close();
                 } catch (IOException e) {   System.err.println("input stream was not closed [main]:RateServer");    }
-                finally {
-                    try {
-                        if(socket != null)     {    socket.close();    }
-                    } catch (IOException e) {   System.err.println("client-socket was not closed [main]:RateServer");   }
-                    finally {
-                        try {
-                            if(serverSocket != null)     {   serverSocket.close();   }
-                        } catch (IOException e) {   System.err.println("server-socket was not closed [main]:RateServer");   }
-                    }
-                }
+            }
+            if(socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {   System.err.println("client-socket was not closed [main]:RateServer");   }
+            }
+            if(serverSocket != null) {
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {   System.err.println("server-socket was not closed [main]:RateServer");   }
+            }
         }
     }
 }

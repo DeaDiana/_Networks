@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
  * To change this template use File | Settings | File Templates.
  */
 public class RateClient {
-    private static String filename = "5.txt";
+    private static String filename = "D:\\TMP\\5.txt";
     private static InetAddress IP = null;
     private static Integer PORT = 5554;
     private static Socket socket = null;
@@ -33,15 +33,14 @@ public class RateClient {
             PORT = Integer.parseInt(args[2]);
             try {
                 IP = InetAddress.getByName(args[1]);
-                //IP = InetAddress.getByName(new String("10.4.0.2"));
             } catch (UnknownHostException e) {
                 System.err.println("did not convert from string to InetAddress [main]:RateClient");
             }
-        } else {    }
+        }
 
         try {
             inputStream = new FileInputStream(filename);
-            socket = new Socket("wDiana", PORT);//IP, PORT);
+            socket = new Socket(IP, PORT);
             outputStream = socket.getOutputStream();
             byte[] message = new byte[LENGTH];
             while (LENGTH == inputStream.read(message))
@@ -56,18 +55,20 @@ public class RateClient {
         }
 
         finally {
-            try {
-                if(inputStream != null)     {   inputStream.close();    }
-            } catch (IOException e) {   System.err.println("input stream was not closed [main]:RateClient");    }
-            finally {
+            if(inputStream != null) {
                 try {
-                    if(outputStream != null)     {   outputStream.close();    }
+                   inputStream.close();
+                } catch (IOException e) {   System.err.println("input stream was not closed [main]:RateClient");    }
+            }
+            if(outputStream != null) {
+                try {
+                       outputStream.close();
                 } catch (IOException e) {   System.err.println("output stream was not closed [main]:RateClient");    }
-                finally {
-                    try {
-                        if(socket != null)     {   socket.close();   }
-                    } catch (IOException e) {   System.err.println("socket was not closed [main]:RateClient");   }
-                }
+            }
+            if(socket != null) {
+                try {
+                       socket.close();
+                } catch (IOException e) {   System.err.println("socket was not closed [main]:RateClient");   }
             }
         }
     }
