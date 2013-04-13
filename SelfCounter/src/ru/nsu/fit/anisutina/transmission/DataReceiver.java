@@ -12,7 +12,7 @@ import java.net.Socket;
  */
 public class DataReceiver implements Runnable{
     private static final int LENGTH = 3 * 1024;
-    private static final int FILENAME_LEN = 5;
+    private static final int FILENAME_LEN = 21;
     Socket socket = null;
     private InputStream inputStream = null;
     private FileOutputStream fileOutputStream = null;
@@ -33,7 +33,7 @@ public class DataReceiver implements Runnable{
                 fileOutputStream = new FileOutputStream(file);
                 int num = inputStream.read(message_buf);
                 fileOutputStream.write(message_buf);
-                while (LENGTH == num) {
+                while (-1 != num) {
                     num = inputStream.read(message_buf);
                     if(num > 0) {   fileOutputStream.write(message_buf, 0, num);    }
                 }
@@ -44,21 +44,23 @@ public class DataReceiver implements Runnable{
         } catch (IOException e) {
             System.err.println("failed on getting input stream from the socket [main]:DataReceiver");
         }
-
         finally {
-            try {
-                if(inputStream != null)     {   inputStream.close();    }
-            } catch (IOException e) {   System.err.println("input stream was not closed [run]:DataReceiver");    }
-            finally {
+            if(inputStream != null) {
                 try {
-                    if(fileOutputStream != null)     {    fileOutputStream.close();    }
-                } catch (IOException e) {   System.err.println("file output stream was not closed [run]:DataReceiver");   }
-                finally {
-                    try {
-                        if(socket != null)     {   socket.close();   }
-                    } catch (IOException e) {   System.err.println("socket was not closed [run]:DataReceiver");   }
-                }
+                       inputStream.close();    System.out.println("received");
+                } catch (IOException e) {   System.err.println("input stream was not closed [run]:DataReceiver");    }
             }
+            if(fileOutputStream != null) {
+                try {
+                        fileOutputStream.close();
+                } catch (IOException e) {   System.err.println("file output stream was not closed [run]:DataReceiver");   }
+            }
+            if(socket != null) {
+                try {
+                       socket.close();
+                } catch (IOException e) {   System.err.println("socket was not closed [run]:DataReceiver");   }
+            }
+
         }
     }
 }

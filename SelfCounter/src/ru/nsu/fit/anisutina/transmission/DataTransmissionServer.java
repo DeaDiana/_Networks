@@ -23,13 +23,11 @@ public class DataTransmissionServer {
         ExecutorService executor = Executors.newFixedThreadPool(5);
         try {
             serverSocket = new ServerSocket(PORT);
-            int iter = 0;
-            while (iter < 15)
+            while (true)
             {
                 socket = serverSocket.accept();
                 Runnable receiver = new DataReceiver(socket);
                 executor.execute(receiver);
-                iter++;
             }
         } catch (IOException e) {
             System.err.println("server socket was not created or server-socked failed on accept [main]:DataTransmissionServer" + Object.class);
@@ -37,12 +35,14 @@ public class DataTransmissionServer {
         finally {
             executor.shutdown();
             while (!executor.isTerminated()){}
-            try {
-                if(socket != null)     {   socket.close();    }
-            } catch (IOException e) {   System.err.println("socket was not closed [main]:DataTransmissionServer");    }
-            finally {
+            if(socket != null) {
                 try {
-                    if(serverSocket != null)     {    serverSocket.close();    }
+                       socket.close();
+                } catch (IOException e) {   System.err.println("socket was not closed [main]:DataTransmissionServer");    }
+            }
+            if(serverSocket != null) {
+                try {
+                        serverSocket.close();
                 } catch (IOException e) {   System.err.println("server-socket was not closed [main]:DataTransmissionServer");   }
             }
         }

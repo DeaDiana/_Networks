@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
  * To change this template use File | Settings | File Templates.
  */
 public class DataTransmissionClient {
-    private static String filename_toread = "C:\\Users\\Diana\\Networks_projects\\SelfCounter\\5.txt";
+    private static String filename_toread = "H:\\SelfCounter\\5.txt";
     private static String filename_tocreate = "5.txt";
     private static InetAddress IP = null;
     private static Integer PORT = 5539;
@@ -28,18 +28,24 @@ public class DataTransmissionClient {
     public static void main(String args[]){
         if(args.length > 0){
             filename_toread = args[0];
-            filename_tocreate = args[3];
+            filename_tocreate = args[0];
             PORT = Integer.parseInt(args[2]);
             try {
                 IP = InetAddress.getByName(args[1]);
             } catch (UnknownHostException e) {
                 System.err.println("did not convert from string to InetAddress [main]:DataTransmissionClient");
             }
+        } else {
+            try {
+                IP = InetAddress.getByName("10.4.0.2");
+            } catch (UnknownHostException e) {
+                System.err.println("did not convert from string to InetAddress [main]:RateClient");
+            }
         }
 
         try {
             inputStream = new FileInputStream(filename_toread);
-            socket = new Socket("wDiana", PORT);//(IP, PORT);
+            socket = new Socket(IP, PORT);
             outputStream = socket.getOutputStream();
             byte[] message = new byte[LENGTH];
 
@@ -55,19 +61,21 @@ public class DataTransmissionClient {
         }
 
         finally {
-            try {
-                if(inputStream != null)     {   inputStream.close();    }
-            } catch (IOException e) {   System.err.println("input stream was not closed [main]:DataTransmissionClient");    }
-            finally {
+            if(inputStream != null) {
                 try {
-                    if(outputStream != null)     {    outputStream.close();    }
+                       inputStream.close();
+                } catch (IOException e) {   System.err.println("input stream was not closed [main]:DataTransmissionClient");    }
+            }
+            if(outputStream != null) {
+                try {
+                        outputStream.close();
                 } catch (IOException e) {   System.err.println("output stream was not closed [main]:DataTransmissionClient");   }
-                finally {
+            }
+            if(socket != null) {
                     try {
-                        if(socket != null)     {   socket.close();   }
+                           socket.close();
                     } catch (IOException e) {   System.err.println("socket was not closed [main]:DataTransmissionClient");   }
                 }
             }
         }
-    }
 }
