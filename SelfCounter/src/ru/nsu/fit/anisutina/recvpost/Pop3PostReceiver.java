@@ -42,29 +42,37 @@ public class Pop3PostReceiver {
 
             response = inputStream.readLine();
             System.out.println(response);
+            if('-' != response.charAt(0)) {
+                System.out.println("Enter your password:");
+                password = inReader.readLine();
+                COMMAND = "PASS " + password + "\r\n";
+                socket.getOutputStream().write(COMMAND.getBytes());
 
-            System.out.println("Enter your password:");
-            password = inReader.readLine();
-            COMMAND = "PASS " + password + "\r\n";
-            socket.getOutputStream().write(COMMAND.getBytes());
+                response = inputStream.readLine();
+                System.out.println(response);
+                if('-' != response.charAt(0)) {
+                    System.out.println("Load letter number | [quit]:");
+                    num_of_letter = inReader.readLine();
 
-            response = inputStream.readLine();
-            System.out.println(response);
+                    while(!num_of_letter.equals("quit")) {
+                        COMMAND = "RETR " + num_of_letter + "\r\n";
+                        File letter = new File("letter_" + num_of_letter + ".txt");
+                        socket.getOutputStream().write(COMMAND.getBytes());
+                        char[] message_buf = new char[BUFFERSIZE];
 
-            System.out.println("Enter number of letter:");
-            num_of_letter = inReader.readLine();
-            COMMAND = "RETR " + num_of_letter + "\r\n";
-            File letter = new File("letter_" + num_of_letter + ".txt");
-            socket.getOutputStream().write(COMMAND.getBytes());
-            char[] message_buf = new char[BUFFERSIZE];
-
-            if(!letter.exists()) {
-                fileOutputStream = new OutputStreamWriter(new FileOutputStream(letter));
-                int num = inputStream.read(message_buf);
-                fileOutputStream.write(message_buf);
-                while (BUFFERSIZE == num) {
-                    num = inputStream.read(message_buf);
-                    if(num > 0) {   fileOutputStream.write(message_buf, 0, num);    }
+                        if(!letter.exists()) {
+                            fileOutputStream = new OutputStreamWriter(new FileOutputStream(letter));
+                            int num = inputStream.read(message_buf);
+                            fileOutputStream.write(message_buf);
+                            while (BUFFERSIZE == num) {
+                                num = inputStream.read(message_buf);
+                                if(num > 0) {   fileOutputStream.write(message_buf, 0, num);    }
+                            }
+                        }
+                        fileOutputStream.close();
+                        System.out.println("Enter number of letter or 'quit':");
+                        num_of_letter = inReader.readLine();
+                    }
                 }
             }
         } catch (IOException e) {
