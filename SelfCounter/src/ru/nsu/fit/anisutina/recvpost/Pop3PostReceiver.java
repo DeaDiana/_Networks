@@ -2,7 +2,6 @@ package ru.nsu.fit.anisutina.recvpost;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.CharBuffer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,9 +17,10 @@ public class Pop3PostReceiver {
     private static BufferedReader inputStream = null;
     private static BufferedReader inReader = null;
     private static OutputStreamWriter fileOutputStream = null;
-    private static String username = "anisyutina";
-    private static String password = "12345";
-    private static String num_of_letter = "222";
+    private static OutputStream outputStream = null;
+    private static String username = "";
+    private static String password = "";
+    private static String num_of_letter = "";
     private static final int BUFFERSIZE = 1024;
 
     public static void main(String args[]) {
@@ -30,6 +30,7 @@ public class Pop3PostReceiver {
         try {
             socket = new Socket(pop3Server, PORT);
             inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            outputStream = socket.getOutputStream();
             String response = inputStream.readLine();
             System.out.println(response);
 
@@ -38,7 +39,7 @@ public class Pop3PostReceiver {
             username = inReader.readLine();
 
             String COMMAND = "USER " + username + "\r\n";
-            socket.getOutputStream().write(COMMAND.getBytes());
+            outputStream.write(COMMAND.getBytes());
 
             response = inputStream.readLine();
             System.out.println(response);
@@ -46,32 +47,37 @@ public class Pop3PostReceiver {
                 System.out.println("Enter your password:");
                 password = inReader.readLine();
                 COMMAND = "PASS " + password + "\r\n";
-                socket.getOutputStream().write(COMMAND.getBytes());
-
+                outputStream.write(COMMAND.getBytes());
                 response = inputStream.readLine();
                 System.out.println(response);
                 if('-' != response.charAt(0)) {
-                    System.out.println("Load letter number | [quit]:");
-                    num_of_letter = inReader.readLine();
-
-                    while(!num_of_letter.equals("quit")) {
-                        COMMAND = "RETR " + num_of_letter + "\r\n";
-                        File letter = new File("letter_" + num_of_letter + ".txt");
-                        socket.getOutputStream().write(COMMAND.getBytes());
-                        char[] message_buf = new char[BUFFERSIZE];
-
-                        if(!letter.exists()) {
-                            fileOutputStream = new OutputStreamWriter(new FileOutputStream(letter));
-                            int num = inputStream.read(message_buf);
-                            fileOutputStream.write(message_buf);
-                            while (BUFFERSIZE == num) {
-                                num = inputStream.read(message_buf);
-                                if(num > 0) {   fileOutputStream.write(message_buf, 0, num);    }
-                            }
-                        }
-                        fileOutputStream.close();
-                        System.out.println("Enter number of letter or 'quit':");
+                    COMMAND = "STAT" + "\r\n";
+                    outputStream.write(COMMAND.getBytes());
+                    response = inputStream.readLine();
+                    System.out.println("STAT\n" + response);
+                    if('-' != response.charAt(0)) {
+                        System.out.println("Load letter number | [quit]:");
                         num_of_letter = inReader.readLine();
+
+                        while(!num_of_letter.equals("quit")) {
+                            COMMAND = "RETR " + num_of_letter + "\r\n";
+                            File letter = new File("letter_" + num_of_letter + ".txt");
+                            outputStream.write(COMMAND.getBytes());
+                            char[] message_buf = new char[BUFFERSIZE];
+
+                            if(!letter.exists()) {
+                                fileOutputStream = new OutputStreamWriter(new FileOutputStream(letter));
+                                int num = inputStream.read(message_buf);
+                                fileOutputStream.write(message_buf);
+                                while (BUFFERSIZE == num) {
+                                    num = inputStream.read(message_buf);
+                                    if(num > 0) {   fileOutputStream.write(message_buf, 0, num);    }
+                                }
+                            }
+                            fileOutputStream.close();
+                            System.out.println("Enter number of letter or 'quit':");
+                            num_of_letter = inReader.readLine();
+                        }
                     }
                 }
             }
@@ -83,6 +89,11 @@ public class Pop3PostReceiver {
                 try {
                     inputStream.close();
                 } catch (IOException e) {   System.err.println("input socket stream was not closed [main]:Pop3PostReceiver");    }
+            }
+            if(outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {   System.err.println("output socket stream was not closed [main]:Pop3PostReceiver");    }
             }
             if(inReader != null) {
                 try {
