@@ -17,50 +17,54 @@ import sun.misc.BASE64Encoder;
 public class SmtpPostSender {
     private static String smtpServer = "smtp.mail.ru";
     private static Socket socket = null;
-    private final static int PORT = 25;
+    private static Integer PORT = 587;
     private static BufferedReader inputStream = null;
     private static OutputStream outputStream = null;
     private static BufferedReader inReader = null;
-    private static String IP = null;
+    private static String name = null;
     private static String mail_address = null;
     private static BASE64Encoder encoder = new BASE64Encoder();
+    private static final String SUCCESS_CODE = "250";
+    private static final String ERROR_CODE = "5";
+    private static final String CONNECTED_CODE = "220";
+    private static final String SUCCESS_AUTH_CODE = "235";
+    private static final String AUTH_RESP_CODE = "334";
+    private static final String DATA_RESP_CODE = "354";
+
 
     public static void main(String args[]) {
         if(args.length > 0) {
             smtpServer = args[0];
+            if(args.length > 1) {
+                PORT = new Integer(args[1]);
+            }
         }
         try {
             socket = new Socket(smtpServer, PORT);
             inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outputStream = socket.getOutputStream();
             String response = inputStream.readLine();
-            System.out.println(response);
-
+            if(!response.startsWith(CONNECTED_CODE)) {
+                System.out.println("Did not connect to server");
+                return;
+            }
             inReader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter your IP:");
-            IP = inReader.readLine();
+            System.out.println("Enter your name:");
+            name = inReader.readLine();
 
-            //String COMMAND = "EHLO " + IP + "\r\n";
-            String COMMAND = "EHLO " + "192.168.1.1" + "\r\n";
+            String COMMAND = "HELO " + name + "\r\n";
             outputStream.write(COMMAND.getBytes());
-
-            int num = 0;
-            //do {
-              //  num = inputStream.read();
-            //} while(-1 != num);
             response = inputStream.readLine();
-            response = inputStream.readLine();
-            response = inputStream.readLine();
-            response = inputStream.readLine();
-            response = inputStream.readLine();
-            System.out.println(response);
+            if(!response.startsWith(SUCCESS_CODE)) {
+                System.out.println("Got error from server: " + response);
+                return;
+            }
             response = "";
-            while(!response.contains("235")) {
+            while(!response.startsWith(SUCCESS_AUTH_CODE)) {
                 COMMAND = "AUTH LOGIN\r\n";
                 outputStream.write(COMMAND.getBytes());
                 response = inputStream.readLine();
-                System.out.println(response);
-                if(response.contains("334")) {
+                if(response.startsWith(AUTH_RESP_CODE)) {
                     System.out.println("Enter your login:");
                     String login =  encoder.encode(inReader.readLine().getBytes());
                     System.out.println("Enter your password:");
@@ -69,41 +73,34 @@ public class SmtpPostSender {
                     COMMAND = login + "\r\n";
                     outputStream.write(COMMAND.getBytes());
                     response = inputStream.readLine();
-                    System.out.println(response);
-                    if(response.contains("334")) {
+                    if(response.startsWith(AUTH_RESP_CODE)) {
                         COMMAND = password + "\r\n";
                         outputStream.write(COMMAND.getBytes());
                         response = inputStream.readLine();
-                        System.out.println(response);
                     }
                 }
             }
 
             do {
-                while (!(response.contains("250") || '5' == response.charAt(0))) {
+                while (!(response.startsWith(SUCCESS_CODE) || response.startsWith(ERROR_CODE))) {
                     System.out.println("Enter your mail address:");
                     mail_address = inReader.readLine();
-                    //COMMAND = "MAIL FROM: " + mail_address + "\r\n";
-                    COMMAND = "MAIL FROM: " + "freilina_07@mail.ru" + "\r\n";
+                    COMMAND = "MAIL FROM: " + mail_address + "\r\n";
                     outputStream.write(COMMAND.getBytes());
                     response = inputStream.readLine();
-                    System.out.println(response);
                 }
                 response = "response";
-                while (!(response.contains("250") || '5' == response.charAt(0))) {
+                while (!(response.startsWith(SUCCESS_CODE) || response.startsWith(ERROR_CODE))) {
                     System.out.println("Enter mail address to send letter to:");
                     mail_address = inReader.readLine();
-                    //COMMAND = "RCPT TO: " + mail_address + "\r\n";
-                    COMMAND = "RCPT TO: " + "freilina_07@mail.ru" + "\r\n";
+                    COMMAND = "RCPT TO: " + mail_address + "\r\n";
                     outputStream.write(COMMAND.getBytes());
                     response = inputStream.readLine();
-                    System.out.println(response);
                 }
                 COMMAND = "DATA\r\n";
                 outputStream.write(COMMAND.getBytes());
                 response = inputStream.readLine();
-                System.out.println(response);
-                if(response.contains("354")) {
+                if(response.startsWith(DATA_RESP_CODE)) {
                     System.out.println("Enter your message:");
                     String part_message = "message";
                     String message = "";
@@ -114,16 +111,15 @@ public class SmtpPostSender {
                     COMMAND = message + "\r\n.\r\n";
                     outputStream.write(COMMAND.getBytes());
                     response = inputStream.readLine();
-                    System.out.println(response);
-                    if(response.contains("250")) {
-                        System.out.println("Your letter has been sent to " + mail_address + "successfully!");
+                    if(response.startsWith(SUCCESS_CODE)) {
+                        System.out.println("Your letter has been sent to " + mail_address + " successfully!");
                     } else {
                         System.out.println("Your letter to " + mail_address + "was not sent.");
                     }
                 }
                 response = "response";
                 System.out.println("Send one more letter?");
-                System.out.println("Type 'quit' to quit.");
+                System.out.println("[Type 'quit' to quit.]");
             } while (!inReader.readLine().contains("quit"));
         } catch (IOException e) {
             System.err.println("Socket was not created or streams were not extracted [main]:SmtpPostSender");
