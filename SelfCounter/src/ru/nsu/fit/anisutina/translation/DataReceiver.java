@@ -23,8 +23,6 @@ public class DataReceiver implements Runnable{
     public DataReceiver(Integer PORTlistenTo){
         try {
             serverSocket = new ServerSocket(PORTlistenTo);
-            socket = serverSocket.accept();
-            inputStream = socket.getInputStream();
         } catch (IOException e) {
             System.err.println("sockets were not created");
         }
@@ -32,19 +30,25 @@ public class DataReceiver implements Runnable{
     @Override
     public void run() {
         try {
-            byte [] filename_buf = new byte[FILENAME_LEN];
-            byte [] message_buf = new byte[LENGTH];
-            inputStream.read(filename_buf);
-            File file = new File("[TIME][" + Long.toString(System.currentTimeMillis()) + "][THREAD][" + Thread.currentThread().getName() + "]_" + new String(filename_buf));
-            if(!file.exists()){
-                fileOutputStream = new FileOutputStream(file);
-                int num = inputStream.read(message_buf);
-                fileOutputStream.write(message_buf);
-                while (-1 != num) {
-                    num = inputStream.read(message_buf);
-                    if(num > 0) {   fileOutputStream.write(message_buf, 0, num);    }
+            while (true) {
+                socket = serverSocket.accept();
+                inputStream = socket.getInputStream();
+                byte [] filename_buf = new byte[FILENAME_LEN];
+                byte [] message_buf = new byte[LENGTH];
+                inputStream.read(filename_buf);
+                File file = new File("[TIME][" + Long.toString(System.currentTimeMillis()) + "][THREAD][" + Thread.currentThread().getName() + "]_" + new String(filename_buf));
+                if(!file.exists()){
+                    fileOutputStream = new FileOutputStream(file);
+                    int num = inputStream.read(message_buf);
+                    fileOutputStream.write(message_buf);
+                    while (-1 != num) {
+                        num = inputStream.read(message_buf);
+                        if(num > 0) {   fileOutputStream.write(message_buf, 0, num);    }
+                    }
                 }
-
+                inputStream.close();
+                fileOutputStream.close();
+                socket.close();
             }
         } catch (FileNotFoundException e) {
             System.err.println("file not found [run]:DataReceiver");

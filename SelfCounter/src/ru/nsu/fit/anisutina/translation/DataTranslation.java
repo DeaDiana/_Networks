@@ -24,15 +24,15 @@ public class DataTranslation implements Runnable{
     Socket socketTo = null;
     private InputStream inputStream = null;
     private OutputStream outputStream = null;
+    private InetAddress serverIP = null;
+    private Integer serverPORT = null;
 
     private DataTranslation(){};
-    public DataTranslation(Integer PORTlistenTo, InetAddress serverIP, Integer serverPORT) {
+    public DataTranslation(Integer PORTlistenTo, InetAddress srvIP, Integer srvPORT) {
+        serverIP = srvIP;
+        serverPORT = srvPORT;
         try {
             serverSocket = new ServerSocket(PORTlistenTo);
-            socketFrom = serverSocket.accept();
-            inputStream = socketFrom.getInputStream();
-            socketTo = new Socket(serverIP, serverPORT);
-            outputStream = socketTo.getOutputStream();
         } catch (IOException e) {
             System.err.println("sockets were not created [constructor]:DataTranslation");
         }
@@ -40,15 +40,25 @@ public class DataTranslation implements Runnable{
     @Override
     public void run() {
         try {
-            byte [] filename_buf = new byte[FILENAME_LEN];
-            byte [] message_buf = new byte[LENGTH];
-            inputStream.read(filename_buf);
-            outputStream.write(filename_buf);
-            int num = inputStream.read(message_buf);
-            outputStream.write(message_buf);
-            while (-1 != num) {
-                num = inputStream.read(message_buf);
-                if(num > 0) {   outputStream.write(message_buf, 0, num);    }
+            while (true) {
+                socketFrom = serverSocket.accept();
+                inputStream = socketFrom.getInputStream();
+                socketTo = new Socket(serverIP, serverPORT);
+                outputStream = socketTo.getOutputStream();
+                byte [] filename_buf = new byte[FILENAME_LEN];
+                byte [] message_buf = new byte[LENGTH];
+                inputStream.read(filename_buf);
+                outputStream.write(filename_buf);
+                int num = inputStream.read(message_buf);
+                outputStream.write(message_buf);
+                while (-1 != num) {
+                    num = inputStream.read(message_buf);
+                    if(num > 0) {   outputStream.write(message_buf, 0, num);    }
+                }
+                inputStream.close();
+                outputStream.close();
+                socketFrom.close();
+                socketTo.close();
             }
         } catch (FileNotFoundException e) {
             System.err.println("file not found [run]:DataTranslator");

@@ -14,3 +14,10 @@ java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/transmission/D
 
 cd C:\Users\Diana\Networks_projects\SelfCounter
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/recvpost/Pop3PostReceiver ccfit.nsu.ru
+
+cd C:\Users\Diana\Networks_projects\SelfCounter
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorServer
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/Translator translationRules.txt
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.1 6001
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.1 6002
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.1 6003

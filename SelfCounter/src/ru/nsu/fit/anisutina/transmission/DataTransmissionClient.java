@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
  * To change this template use File | Settings | File Templates.
  */
 public class DataTransmissionClient {
-    private static String filename_toread = "H:\\SelfCounter\\5.txt";
+    private static String filename_toread = "5.txt";
     private static String filename_tocreate = "5.txt";
     private static InetAddress IP = null;
     private static Integer PORT = 5539;
@@ -37,7 +37,7 @@ public class DataTransmissionClient {
             }
         } else {
             try {
-                IP = InetAddress.getByName("10.4.0.2");
+                IP = InetAddress.getByName("192.168.1.4");
             } catch (UnknownHostException e) {
                 System.err.println("did not convert from string to InetAddress [main]:RateClient");
             }
