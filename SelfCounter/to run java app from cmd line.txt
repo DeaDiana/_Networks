@@ -18,6 +18,7 @@ java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/recvpost/Pop3P
 cd C:\Users\Diana\Networks_projects\SelfCounter
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorServer
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/Translator translationRules.txt
-java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.1 6001
-java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.1 6002
-java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.1 6003
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.4 6001
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.4 6002
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.4 6003
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient qwenkqwenJava4th.djvu 192.168.1.4 6003

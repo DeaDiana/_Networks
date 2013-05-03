@@ -1,9 +1,6 @@
 package ru.nsu.fit.anisutina.translation;
 
-import java.io.IOException;
 import java.lang.String;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,8 +14,6 @@ import java.util.concurrent.Executors;
  */
 public class TranslatorServer {
     private static Vector<Integer> portListListenTo = null;
-    private static ServerSocket serverSocket = null;
-    private static Socket socket = null;
     private static ExecutorService executor = null;
 
     public static void main(String args[]){
@@ -39,16 +34,6 @@ public class TranslatorServer {
         finally {
             executor.shutdown();
             while (!executor.isTerminated()){}
-            if(socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {   System.err.println("socket was not closed [main]:TranslationServer");    }
-            }
-            if(serverSocket != null) {
-                try {
-                    serverSocket.close();
-                } catch (IOException e) {   System.err.println("server-socket was not closed [main]:TranslationServer");   }
-            }
         }
     }
 }
