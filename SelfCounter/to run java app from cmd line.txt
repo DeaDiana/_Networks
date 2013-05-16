@@ -22,3 +22,9 @@ java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/Tr
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.4 6002
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient ThinkingInJava4th.pdf 192.168.1.4 6003
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/translation/TranslatorClient qwenkqwenJava4th.djvu 192.168.1.4 6003
+
+
+cd C:\Users\Diana\Networks_projects\SelfCounter
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/md5/Md5HackerServer secret_code.txt
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/md5/Md5HackerServer
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/md5/Md5HackerClient

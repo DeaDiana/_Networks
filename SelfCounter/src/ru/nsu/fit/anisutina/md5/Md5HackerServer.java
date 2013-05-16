@@ -2,7 +2,7 @@ package ru.nsu.fit.anisutina.md5;
 
 import ru.nsu.fit.anisutina.transmission.DataReceiver;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
@@ -20,56 +20,40 @@ public class Md5HackerServer {
     private static final int PORT = 5500;
     private static ServerSocket serverSocket = null;
     private static Socket socket = null;
-    private static String secret = "3";//"theSecret";
-    private static Integer expectedResult = 33;
-    private static Integer rightRange = 100000000;
-    private static Integer lengthInterval = 20;
-    private static byte[] secretBytes = null;
-    private static StringBuffer cryptedSecretString = null;
+    private static String file_name = "";
+    private static String cryptedSecretString = "0f1577caba02be3034205b3ab59a97e2";
+    private static final Integer STEP = 100000;
 
     public static void main(String args[]) {
         ExecutorService executor = Executors.newFixedThreadPool(5);
-        Integer start = 0;
         if(args.length > 0) {
-            secret = args[0];
-        }
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("MD5");
-            //md.update(secret.getBytes());
-            md.update(expectedResult.byteValue());
-            System.out.println(expectedResult.byteValue());
-            secretBytes = md.digest();
-            cryptedSecretString = new StringBuffer();
-            for (int i = 0; i < secretBytes.length; i++) {
-                cryptedSecretString.append(Integer.toString((secretBytes[i] & 0xff) + 0x100, 16).substring(1));
+            file_name = args[0];
+            File secret_file = new File(file_name);
+            if(secret_file.exists()) {
+                try {
+                    BufferedReader fileInputStream = new BufferedReader(new InputStreamReader(new FileInputStream(secret_file)));
+                    cryptedSecretString = fileInputStream.readLine();
+                } catch (IOException e) {
+                    System.err.println("did not read md5-hash from " + file_name + " [main]:Md5HackerServer");
+                }
             }
-            System.out.println("secret's hash: " + cryptedSecretString);
-        } catch (NoSuchAlgorithmException e) {
-            System.err.println("did not get the message digest [main]:Md5HackerServer");
         }
-
+        System.out.println("trying to hack:");
+        System.out.println(cryptedSecretString);
         try {
             serverSocket = new ServerSocket(PORT);
+            Integer start = 0;
+            Integer end = STEP;
             while (true)
             {
                 socket = serverSocket.accept();
-                Callable<Integer> receiver = new Md5Employer(socket, cryptedSecretString.toString(), start, lengthInterval);
-                Future<Integer> future = executor.submit(receiver);
-                start += lengthInterval;
-                try {
-                    if(null != future.get()) {
-                        System.out.println("SUCCESS" + future.get().toString());
-                        break;
-                    }
-                } catch (InterruptedException e) {
-                    System.err.println("future is not ready yet (interrupted)[main]:Md5HackerServer");
-                } catch (ExecutionException e) {
-                    System.err.println("future is not ready yet (execution)[main]:Md5HackerServer");
-                }
+                Runnable receiver = new Md5Employer(socket, cryptedSecretString, start, end);
+                executor.execute(receiver);
+                start = end;
+                end += STEP;
             }
         } catch (IOException e) {
-            System.err.println("server socket was not created or server-socked failed on accept [main]:DataTransmissionServer" + Object.class);
+            System.err.println("server socket was not created or server-socked failed on accept [main]:Md5HackerServer" + Object.class);
         }
         finally {
             executor.shutdown();
@@ -77,12 +61,12 @@ public class Md5HackerServer {
             if(socket != null) {
                 try {
                     socket.close();
-                } catch (IOException e) {   System.err.println("socket was not closed [main]:DataTransmissionServer");    }
+                } catch (IOException e) {   System.err.println("socket was not closed [main]:Md5HackerServer");    }
             }
             if(serverSocket != null) {
                 try {
                     serverSocket.close();
-                } catch (IOException e) {   System.err.println("server-socket was not closed [main]:DataTransmissionServer");   }
+                } catch (IOException e) {   System.err.println("server-socket was not closed [main]:Md5HackerServer");   }
             }
         }
         System.out.println("Done.");

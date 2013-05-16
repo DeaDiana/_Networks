@@ -1,9 +1,7 @@
 package ru.nsu.fit.anisutina.md5;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
-import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,45 +10,59 @@ import java.util.concurrent.Callable;
  * Time: 1:28
  * To change this template use File | Settings | File Templates.
  */
-public class Md5Employer implements Callable {
+public class Md5Employer implements Runnable {
     private Socket socket = null;
-    private String cryptedSecretString = null;
-    private InputStream inputStream = null;
-    private OutputStream outputStream = null;
+    private BufferedReader inputStream = null;
+    private PrintWriter outputStream = null;
     private Integer start = null;
-    private Integer lengthInterval = 20;
+    private Integer end = 20;
+    private String crypted_string = null;
 
     private Md5Employer() {};
-    public Md5Employer(Socket skt, String expectedResult, Integer strt, Integer lengthInterval) {
+    public Md5Employer(Socket skt, String crpt_str, Integer strt, Integer en) {
         socket = skt;
-        cryptedSecretString = expectedResult;
+        crypted_string = crpt_str;
         start = strt;
+        end = en;
     }
+
     @Override
-    public Integer call() throws Exception {
-        inputStream = socket.getInputStream();
-        outputStream = socket.getOutputStream();
-        byte[] result = new byte[1024];
-        Integer current = start;
-        Integer successive_attempt = null;
-        do {
-            outputStream.write(current.byteValue());
-            int num = inputStream.read(result);
-            StringBuffer str_buffer = new StringBuffer();
-            for (int i = 0; i < num; i++) {
-                str_buffer.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
+    public void run() {
+        try {
+            inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            outputStream = new PrintWriter(socket.getOutputStream(),true);
+            String command = inputStream.readLine();
+            if(command.equals("GET_WORK")) {
+                String build_task = new String(start.toString() + " " + end.toString() + " " + crypted_string);
+                outputStream.println(build_task);
             }
-            System.out.println(str_buffer);
-            if(cryptedSecretString.equals(str_buffer.toString())) {
-                System.out.println("YAHOO: " + current.toString());
-                successive_attempt = current;
+            if(command.equals("LISTEN_RESULT")) {
+                String original_string = inputStream.readLine();
+                System.out.println("original string is:");
+                System.out.println(original_string);
             }
-            current++;
-            result = new byte[1024];
-        } while (!current.equals(start + lengthInterval + 1));
-        inputStream.close();
-        outputStream.close();
-        socket.close();
-        return successive_attempt;
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+        } catch (IOException e) {
+            System.err.println("input or output stream was not gotten from socket [run]:Md5Employer");
+        }
+        finally {
+            if(inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {   System.err.println("input stream was not closed [run]:Md5Employer");    }
+            }
+            if(outputStream != null) {
+                //try {
+                    outputStream.close();
+                //} catch (IOException e) {   System.err.println("output stream was not closed [run]:Md5Employer");    }
+            }
+            if(socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {   System.err.println("socket was not closed [run]:Md5Employer");    }
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ public class Md5HackerClient {
     private static InetAddress IP = null;
     private static Socket socket = null;
     private static BufferedReader inputStream = null;
-    private static BufferedWriter outputStream = null;
+    private static PrintWriter outputStream = null;
     private static final char[] ACGT = {'A', 'C', 'G', 'T'};
     private static String expected_result = null;
     private static Integer start = null;
@@ -59,15 +59,19 @@ public class Md5HackerClient {
         }
 
         try {
-            /*
+
             socket = new Socket(IP, PORT);
             inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            //outputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            if(inputStream == null) System.err.println("in is null");
+            outputStream = new PrintWriter(socket.getOutputStream(), true);
+            if(outputStream == null) System.err.println("out is null");
+            outputStream.println("GET_WORK");
             String task_line = inputStream.readLine();
             inputStream.close();
+            outputStream.close();
             socket.close();
-              */
-            String task_line = "10 20 cd6a9bd2a175104eed40f0d33a8b4020";
+
+            //String task_line = "10 20 cd6a9bd2a175104eed40f0d33a8b4020";
             String[] parameters = task_line.split(" ");
             start = new Integer(parameters[0]);
             end = new Integer(parameters[1]);
@@ -95,17 +99,21 @@ public class Md5HackerClient {
                     break;
                 }
             }
-            System.out.println(original_string + " was encoded to " + expected_result);
-               /*
             if(original_string != null) {
+                System.out.println(original_string);
+                System.out.println(expected_result);
                 socket = new Socket(IP, PORT);
-                outputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                outputStream.write(original_string);
+                outputStream = new PrintWriter(socket.getOutputStream(), true);
+                outputStream.println("LISTEN_RESULT");
+                outputStream.println(original_string);
                 outputStream.close();
                 socket.close();
+            } else {
+                System.out.println("[" + start + " " + end + "] not found");
+                System.out.println(expected_result);
             }
         } catch (IOException e) {
-            System.err.println("socket was not created");*/
+            System.err.println("socket was not created [main]:Md5HackerClient");
         }
         finally {
             if(inputStream != null) {
@@ -114,9 +122,7 @@ public class Md5HackerClient {
                 } catch (IOException e) {   System.err.println("input stream was not closed [main]:Md5HackerClient");    }
             }
             if(outputStream != null) {
-                try {
                     outputStream.close();
-                } catch (IOException e) {   System.err.println("output stream was not closed [main]:Md5HackerClient");    }
             }
             if(socket != null) {
                 try {
