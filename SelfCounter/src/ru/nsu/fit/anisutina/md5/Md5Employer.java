@@ -54,9 +54,7 @@ public class Md5Employer implements Runnable {
                 } catch (IOException e) {   System.err.println("input stream was not closed [run]:Md5Employer");    }
             }
             if(outputStream != null) {
-                //try {
                     outputStream.close();
-                //} catch (IOException e) {   System.err.println("output stream was not closed [run]:Md5Employer");    }
             }
             if(socket != null) {
                 try {

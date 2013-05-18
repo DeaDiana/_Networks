@@ -28,3 +28,4 @@ cd C:\Users\Diana\Networks_projects\SelfCounter
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/md5/Md5HackerServer secret_code.txt
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/md5/Md5HackerServer
 java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/md5/Md5HackerClient
+java -classpath ./out/production/SelfCounter ru/nsu/fit/anisutina/md5/Md5HackerClient 10.4.0.34 5500

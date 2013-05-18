@@ -22,7 +22,7 @@ public class Md5HackerServer {
     private static Socket socket = null;
     private static String file_name = "";
     private static String cryptedSecretString = "0f1577caba02be3034205b3ab59a97e2";
-    private static final Integer STEP = 100000;
+    private static final Integer STEP = 10000;
 
     public static void main(String args[]) {
         ExecutorService executor = Executors.newFixedThreadPool(5);

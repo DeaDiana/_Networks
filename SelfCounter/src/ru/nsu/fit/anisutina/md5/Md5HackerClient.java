@@ -71,7 +71,6 @@ public class Md5HackerClient {
             outputStream.close();
             socket.close();
 
-            //String task_line = "10 20 cd6a9bd2a175104eed40f0d33a8b4020";
             String[] parameters = task_line.split(" ");
             start = new Integer(parameters[0]);
             end = new Integer(parameters[1]);
